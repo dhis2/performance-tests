@@ -17,7 +17,7 @@ public class GeneratedTrackedEntityAttribute
 
     private String name = "test generated value";
 
-    private String pattern = "RANDOM(####)";
+    private String pattern = "SEQUENTIAL(####)";
 
     private String shortName = "test_generated_value3";
 

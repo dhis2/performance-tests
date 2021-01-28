@@ -1,14 +1,9 @@
 package org.hisp.dhis.tasks;
 
-import com.github.myzhan.locust4j.Locust;
 import io.restassured.response.Response;
 import org.hisp.dhis.actions.RestApiActions;
 import org.hisp.dhis.request.QueryParamsBuilder;
 import org.hisp.dhis.response.dto.ApiResponse;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ReserveTrackedEntityAttributeValuesTask
     extends
@@ -35,34 +30,13 @@ public class ReserveTrackedEntityAttributeValuesTask
     public void execute()
     {
         RestApiActions trackedEntityAttributeActions = new RestApiActions( endpoint );
-        long time = System.currentTimeMillis();
 
-        List<ApiResponse> setupResponses = null;
+        String attributeID = "c5Mvtl3GuIb";
 
-        ApiResponse response = null;
+        ApiResponse response = trackedEntityAttributeActions.get( attributeID + "/generateAndReserve",
+                new QueryParamsBuilder().add( "numberToReserve", "1" ) );
 
-        String attributeId = new CreateTrackedEntityAttributeTask().executeAndGetId();
-
-        setupResponses = IntStream.range( 0, 10 ).mapToObj( r ->
-            trackedEntityAttributeActions.get( attributeId + "/generateAndReserve",
-                new QueryParamsBuilder().add( "numberToReserve", "800" ) ) )
-            .collect( Collectors.toList() );
-
-        response = trackedEntityAttributeActions.get( attributeId + "/generateAndReserve",
-            new QueryParamsBuilder().add( "numberToReserve", "800" ) );
-
-        if ( setupResponses.stream().allMatch( r -> r.statusCode() == 200 ) )
-        {
-            record( response.getRaw() );
-        }
-
-        else
-        {
-            ApiResponse failureResponse = setupResponses.stream().filter( r -> r.statusCode() != 200 ).findFirst().get();
-
-            Locust.getInstance().recordFailure( "http", getName() + " SETUP",
-                System.currentTimeMillis() - time, failureResponse.getRaw().getBody().print() );
-        }
+        record( response.getRaw() );
     }
 
     private void record( Response response )

@@ -31,7 +31,7 @@ public class LoginTask
 
     public void execute()
     {
-        RestAssured.getRestAssured().authentication = preemptive().basic( "system", "System123" );
+        RestAssured.getRestAssured().authentication = preemptive().basic( "admin", "district" );
 
         Response apiResponse = RestAssured.getRestAssured().given().contentType( ContentType.TEXT ).when()
             .get( "api/me" ).thenReturn();
